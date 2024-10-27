@@ -20,7 +20,7 @@ const io = new Server(httpServer, {
     methods: ['GET', 'POST', 'PUT'],
     credentials: true
   },
-  pingTimeout: 60000, // Desconectar si no hay actividad en 60 segundos
+  pingTimeout: 1200000, // Desconectar si no hay actividad en 120 segundos
   pingInterval: 25000, // Enviar pings cada 25 segundos
 });
 
