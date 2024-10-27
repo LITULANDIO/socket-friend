@@ -24,6 +24,9 @@ const io = socketIo(httpServer, {
 
 // Almacenar el estado de selección de invitados por grupo
 let selectedGuests = {};
+// Configuración de ping para mantener la conexión
+io.set('pingTimeout', 60000); // Desconectar si no hay actividad en 60 segundos
+io.set('pingInterval', 25000); // Enviar pings cada 25 segundos
 
 io.on('connection', (socket) => {
     console.log('A user connected');
