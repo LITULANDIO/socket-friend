@@ -59,7 +59,7 @@ io.on('connection', (socket) => {
                 if (response.status !== 200) {
                     throw new Error('Error al actualizar en la base de datos');
                 } else {
-                    socket.emit('successGuest', { success: 'ok' })
+                    socket.emit('successGuest', { success: 'ok' , user: ids.idUser })
                 }
             })
             .catch(error => {
