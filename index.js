@@ -1,19 +1,20 @@
-// const express = require('express');
-// const http = require("http");
-// const Server = require('socket.io');
-// const cors = require('cors');
-// const axios = require('axios');
-
-import express from 'express';
-import http from 'http';
-import { Server } from 'socket.io'; // Cambiado a 'Server' para mayor claridad
-import cors from 'cors';
-import axios from 'axios';
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+const axios = require('axios');
+const cors = require('cors');
 
 const app = express();
 const httpServer = http.createServer(app);
 
-const io = Server(httpServer, {
+// Configuración de CORS en Express
+app.use(cors({
+  origin: ['https://app-friend.netlify.app', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT'],
+  credentials: true
+}));
+
+const io = socketIo(httpServer, {
   cors: {
     origin: ['https://app-friend.netlify.app', 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT'],
@@ -21,8 +22,7 @@ const io = Server(httpServer, {
   }
 });
 
-app.use(cors());
-
+// Almacenar el estado de selección de invitados por grupo
 let selectedGuests = {};
 
 io.on('connection', (socket) => {
@@ -35,7 +35,6 @@ io.on('connection', (socket) => {
 
     socket.on('guestUpdated', (updatedGuest, ids) => {
         const { idGroup } = ids;
-        console.log('socket', )
 
         // Verificar si el invitado ya ha sido seleccionado
         if (selectedGuests[idGroup] && selectedGuests[idGroup].includes(updatedGuest.idGuest)) {
@@ -49,8 +48,7 @@ io.on('connection', (socket) => {
         }
         selectedGuests[idGroup].push(updatedGuest.idGuest);
 
-        // Emitir el evento a todos los usuarios en el grupo inmediatamente
-        console.log('send', updatedGuest, ids)
+        // Emitir el evento a todos los usuarios en el grupo
         io.to(idGroup).emit('guestUpdatedCompleted', updatedGuest, ids);
 
         // Intentar actualizar la base de datos en paralelo
@@ -62,13 +60,16 @@ io.on('connection', (socket) => {
             })
             .catch(error => {
                 console.error('Error updating guest in database:', error);
-                // Si hay un error, puedes emitir un evento para notificar a los clientes
                 io.to(idGroup).emit('updateError', { message: 'Error al actualizar el invitado en la base de datos.' });
             });
     });
 
-    socket.on('disconnect', () => {
-        console.log('A user disconnected');
+    socket.on('disconnect', (reason) => {
+        console.log('A user disconnected', reason);
+    });
+  
+    socket.on('connect_error', (error) => {
+        console.error(`Connection error: ${error.message}`);
     });
 });
 
@@ -76,19 +77,17 @@ io.on('connection', (socket) => {
 const updateGuestInDatabase = async (guest) => {
     const options = {
         method: 'PUT',
-        url: 'https://app-friends.quisqui.com/api/user/group/guests/updateGuest', // Cambia esto a tu endpoint real
+        url: 'https://app-friends.quisqui.com/api/user/group/guests/updateGuest',
         data: guest
     };
     return axios(options);
 };
 
-// Puerto para el servidor WebSocket
-const port = process.env.PORT || 3000;
-httpServer.listen(port, () => {
-  console.log(`WebSocket server is running on port ${port}`);
+const PORT = process.env.PORT || 3000;
+httpServer.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
 
-// Ruta base para probar el servidor
 app.get('/', (req, res) => {
   res.send('Hello from Socket Server!');
 });
