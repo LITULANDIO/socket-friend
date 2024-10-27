@@ -58,6 +58,8 @@ io.on('connection', (socket) => {
             .then(response => {
                 if (response.status !== 200) {
                     throw new Error('Error al actualizar en la base de datos');
+                } else {
+                    socket.emit('successGuest', { success: 'ok' })
                 }
             })
             .catch(error => {
