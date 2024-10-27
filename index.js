@@ -14,7 +14,7 @@ app.use(cors({
   credentials: true
 }));
 
-const io = Server(httpServer, {
+const io = new Server(httpServer, {
   cors: {
     origin: ['https://app-friend.netlify.app', 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT'],
