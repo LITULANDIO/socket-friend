@@ -1,8 +1,8 @@
-import express from 'express';
-import http from 'http';
-import { Server as socketIo } from 'socket.io';
-import axios from 'axios';
-import cors from 'cors';
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const axios = require('axios');
+const cors = require('cors');
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -14,7 +14,7 @@ app.use(cors({
   credentials: true
 }));
 
-const io = socketIo(httpServer, {
+const io = Server(httpServer, {
   cors: {
     origin: ['https://app-friend.netlify.app', 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT'],
