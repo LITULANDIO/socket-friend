@@ -81,7 +81,7 @@ io.on('connection', (socket) => {
 const updateGuestInDatabase = async (guest) => {
     const options = {
         method: 'PUT',
-        url: 'https://node-friends.onrender.com/api/user/group/guests/updateGuest',
+        url: 'https://app-friends.quisqui.com/api/user/group/guests/updateGuest',
         data: guest
     };
     return axios(options);
