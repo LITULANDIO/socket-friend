@@ -19,9 +19,7 @@ const io = new Server(httpServer, {
     origin: ['https://app-friend.netlify.app', 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT'],
     credentials: true
-  },
-  pingTimeout: 1200000, // Desconectar si no hay actividad en 120 segundos
-  pingInterval: 25000, // Enviar pings cada 25 segundos
+  }
 });
 
 // Almacenar el estado de selección de invitados por grupo
